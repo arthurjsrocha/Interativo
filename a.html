@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	
+	<title> Frigoríficos</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<!-- <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" /> -->
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin=""></script>
+
+     <!-- markercluster  -->
+    <link rel="stylesheet" href="./dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="./dist/MarkerCluster.Default.css" />
+
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		.leaflet-container {
+			height: 400px;
+			width: 600px;
+			max-width: 100%;
+			max-height: 100%;
+		}
+	</style>
+
+<script src = "pontos_frigorificos.geoJSON"></script>
+	
+</head>
+<body>
+
+<div id='map'></div>
+
+<script src="pontos_frigorificos.js"></script>
+<!-- markercluster  -->
+<script src="./dist/leaflet.markercluster.js"></script>
+
+<script>
+
+
+	
+	var map = L.map('map').setView([-1.458621, -48.488347], 4);
+
+
+	var tiles1 = L.tileLayer('https://api.mapbox.com/styles/v1/arthurjrocha/cl268i17z003e14o5yky6jnut/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiYXJ0aHVyanJvY2hhIiwiYSI6ImNsMXBjeGF0OTA0eXYzY3BndWpsbm15MTgifQ.U5WAS-rQQcswwiysi7mjaQ', {}).addTo(map);
+	var tiles2 = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {});
+	var tiles3 = L.tileLayer('https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png', {});
+	var tiles4 = L.tileLayer('https://tile.openstreetmap.bzh/br/{z}/{x}/{y}.png', {});
+
+	const geojsonMarkerOptions = {
+    radius: 5,
+    fillColor: "#6a0dad",
+    color: "#000",
+    weight: 1,
+    opacity: 1,
+    fillOpacity: 0.8,
+  };
+
+  // loading geojson
+  const lightData = L.geoJSON(pontos_frigorificos, {
+    onEachFeature: function (feature, layer) {
+
+           const popupContent =
+          '<h4 class = "text-primary">Frigoríficos na Amazônia Legal </h4>' +
+          '<div class="container"><table class="table table-striped">' +
+          "<thead><tr><th>Informações</th><th>Valores</th></tr></thead>" +
+          "<tbody><tr><td> ID </td><td>" +
+          feature.properties.ID +
+          "</td></tr>" +
+          "<tr><td>Nome</td><td>" +
+          feature.properties.Frigorífi +
+          "</td></tr>" +
+          "<tr><td> Estado </td><td>" +
+          feature.properties.UF +
+          "</td></tr>" +
+          "<tr><td> Município </td><td>" +
+          feature.properties.Município +
+          "</td></tr>" +
+          "<tr><td> TAC </td><td>" +
+          feature.properties.TAC +
+          "</td></tr>";
+          
+          layer.bindPopup(popupContent);
+
+    },
+    pointToLayer: function (feature, latlng) {
+      return L.circleMarker(latlng, geojsonMarkerOptions);
+    },
+  });
+  
+  const markers = L.markerClusterGroup().addLayer(lightData);
+
+  // marker clustering
+  map.addLayer(markers);
+
+
+
+	var baselayer = {
+		'Imagem de satélite':tiles1,
+		'Altimetria':tiles2,
+		'Vegetação':tiles3,
+	};
+
+	
+
+	var scale = L.control.scale();
+	scale.addTo(map);
+
+
+	
+	
+L.control.layers(baselayer, {}).addTo(map)
+</script>
+
+
+
+</body>
+</html>
